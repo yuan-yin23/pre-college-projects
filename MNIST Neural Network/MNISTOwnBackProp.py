@@ -35,7 +35,7 @@ def feedForward(inputty):           #Need to make more than one output cases acc
     curList = inputty
     outputty = []
     updatedNums = []
-    for idx, lcount in enumerate(layerCt[1:]):  # 2 1 1
+    for idx, lcount in enumerate(layerCt[1:]):
         newList = []
         for no in range(lcount):  #for each iteration (get weights)
             sum = dotProduct(curList, weights[idx][no*len(curList):no*len(curList)+len(curList)])
@@ -52,7 +52,7 @@ def backProp(expected, outputty, network):
     error = [n - outputty[i] for i, n in enumerate(expected)]      #expected - actual --> error = [for i, n in enumerate(expected)]
     newWeights = [[*weigh] for weigh in weights]
     
-    step3 = error       #partial 2, partial wrt the y
+    step3 = error       #partial wrt the y
     errorCells = [[], [], [], [], [], []]
     for i, nodes in enumerate(network[::-1]):       #reversing the neural network to back propagate
         errorCell = 0
@@ -73,7 +73,7 @@ def backProp(expected, outputty, network):
                     
                     partial = errorCell*node
                     for ii,w in enumerate(weights[len(weights)-i-1][indy*len(nodes):indy*len(nodes)+len(nodes)]):
-                        newWeights[len(weights)-i-1][indy*len(nodes)+ii] = w + 0.1*partial  #FIX THIS, MAKE GENERAL
+                        newWeights[len(weights)-i-1][indy*len(nodes)+ii] = w + 0.1*partial
                 continue
                     
             partial = errorCell*node
@@ -84,7 +84,6 @@ def backProp(expected, outputty, network):
             for ii, w in enumerate(weights[len(weights)-i-1][ind*constant:ind*constant+constant]):       
                 newWeights[len(weights)-i-1][ind*constant+ii] = w + 0.1*partial           #updating weight
                 #print("new Weight", w+0.1*partial)
-            #do partial part
         step3 = errorCell
         #print(newWeights)
     #print("errorCells", errorCells)
@@ -127,4 +126,5 @@ def main():
     
 setGlobals()
 if __name__ == "__main__": main()
+
 # Yuan Yin Student, Period 3, 2025
