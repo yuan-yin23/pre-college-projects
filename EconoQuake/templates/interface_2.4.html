@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoQuake</title>
+    <link rel="stylesheet" href="static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+<body>
+    <h1>EconoQuake</h1>
+
+
+   
+    <form id="shockForm">
+        <label for="shockFactor">Enter Shock Factor:</label>
+        <input type="number" id="shockFactor" name="shockFactor" required>
+
+        <label for="countryName">Enter Country:</label>
+        <input type="text" id="countryName" name="countryName" required>
+        
+        <label for="industryName">Enter Industry:</label>
+        <input type="text" id="industryName" name="industryName" required>
+        
+
+        <button type="submit" >Update Shock</button>
+    </form>
+
+
+    <p>The current shock factor is: {{ shock }}</p>
+    <p>The current country is: {{ country }}</p>
+    <p>The current industry is: {{ industry }}</p>
+
+    <h2>Results</h2>
+    <table border="1">
+        <tr>
+            <th>Sector</th>
+            <th>Impact</th>
+        </tr>
+        {% for key, value in results.items() %}
+        <tr>
+            <td>{{ key }}</td>
+            <td>{{ value }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+
+
+    <div class="image-container">
+        <img src="static/images/world5.png" id="r1bg">
+
+        <div class="button-container" id="button1">
+            <button class="dot-button" onclick="handleClick('trial')"></button>
+            <div class="textbox">UGH</div>
+        </div>
+        <div class="button-container" id="USA">
+            <button class="dot-button" onclick="handleClickUSA('USA')"></button>
+            <div class="textbox">USA</div>
+        </div>
+        <div class="button-container" id="China">
+            <button class="dot-button" onclick="handleClickChina('China')"></button>
+            <div class="textbox">China</div>
+        </div>
+        <div class="button-container" id="Brazil">
+            <button class="dot-button" onclick="handleClick('Brazil')"></button>
+            <div class="textbox">Brazil</div>
+        </div>
+        <div class="button-container" id="Russia">
+            <button class="dot-button" onclick="handleClick('Russia')"></button>
+            <div class="textbox">Russia</div>
+        </div>
+        <div class="button-container" id="Australia">
+            <button class="dot-button" onclick="handleClick('Australia')"></button>
+            <div class="textbox">Australia</div>
+        </div>
+        <div class="button-container" id="RestOfWorld">
+            <button class="dot-button" onclick="handleClick('Rest Of World')"></button>
+            <div class="textbox">Rest Of World</div>
+        </div>
+        <div class="button-container" id="Cananda">
+            <button class="dot-button" onclick="handleClick('Cananda')"></button>
+            <div class="textbox">Cananda</div>
+        </div>
+        <div class="button-container" id="Spain">
+            <button class="dot-button" onclick="handleClick('Spain')"></button>
+            <div class="textbox">Spain</div>
+        </div>
+        <div class="button-container" id="France">
+            <button class="dot-button" onclick="handleClick('France')"></button>
+            <div class="textbox">France</div>
+        </div>
+
+    </div>
+
+    <canvas id="testChart"></canvas>
+    <canvas id="resultChart" width="300" height="400"></canvas>
+    
+
+    <div class="slidecontainer">
+        <input type="range" min="1" max="100" value="50" class="sliderred accentred" id="redSlider">
+        <input type="range" min="1" max="100" value="50" class="sliderblue accentblue">
+        <input type="range" min="1" max="100" value="50" class="slidergreen accentgreen">
+    </div>
+
+    <script>
+    
+
+        const redSlider = document.getElementById("redSlider");
+        
+        function getSliderValues(){
+            const redValue = redSlider.value;
+            console.log("Red: ", redValue);
+        }
+
+        
+        function handleClick(dotName) {
+            alert(`${dotName} clicked!`);
+        }
+
+        function handleClickUSA(dotName) {
+            alert(`${dotName}: 
+                    GDP: $23.5T
+                    Imports: $3.2T [Machinery, Vehicles, Minerals, Fuels]
+                    Exports: $2.1T [Petroleum, Gas, Automobile, Aircraft]
+                    `);
+        }
+
+        function handleClickChina(dotName) {
+            alert(`${dotName}: 
+                    GDP: $17.17T
+                    Imports: $2.6T [Mechanical, Mineral, Agriculture, Gems]
+                    Exports: $3.6T [Electrical, Telephones, Computers, Cars, Batteries]
+                    `);
+        }
+
+        redSlider.oninput = getSliderValues;
+
+
+
+let chartInstance = null;
+let testChartInstance = null;
+
+document.getElementById("shockForm").addEventListener("submit", function(e) {
+    e.preventDefault(); // stop page from reloading
+
+    console.log("🚨 Form submitted!");
+
+    const shock = document.getElementById("shockFactor").value;
+    const country = document.getElementById("countryName").value;
+    const industry = document.getElementById("industryName").value;
+
+
+    if (country === "USA" && industry === "Agriculture" && shock === "200") {
+        const testCtx = document.getElementById("testChart").getContext("2d");
+
+        const labels = ['Agriculture', 'Mining', 'Utilities', 'Construction', 'Services'];
+        const original = [120, 90, 75, 60, 105];
+        const shocked = [300, 70, 85, 155, 180];
+
+        // Destroy previous chart if exists
+        if (testChartInstance) {
+            testChartInstance.destroy();
+        }
+
+        // Create the original chart
+        testChartInstance = new Chart(testCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Sector Output',
+                    data: shocked,
+                    backgroundColor: 'rgba(255, 159, 64, 0.6)',
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                animation: {
+                    duration: 1000,
+                    easing: 'easeOutQuart'
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'USA Agriculture Shock 200'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                        display: true,
+                        text: 'Output Value (in Billions USD)',
+                        font: {
+                        size: 16
+                        },
+                        color: '#333'
+                    }
+                }
+            }
+        }
+        });
+    }
+
+    else if (country === "CHN" && industry === "Telecommunications" && shock === "500") {
+        const testCtx = document.getElementById("testChart").getContext("2d");
+
+        const labels = ['USA', 'China', 'Brazil', 'France', 'Germany'];
+        const original = [120, 90, 75, 60, 105];
+        const shocked = [420, 690, 85, 100, 50];
+
+        // Destroy previous chart if exists
+        if (testChartInstance) {
+            testChartInstance.destroy();
+        }
+
+        // Create the original chart
+        testChartInstance = new Chart(testCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Sector Output',
+                    data: shocked,
+                    backgroundColor: 'rgba(255, 159, 64, 0.6)',
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                animation: {
+                    duration: 1000,
+                    easing: 'easeOutQuart'
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'China Telecommunications Shock 500'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                        display: true,
+                        text: 'Output Value (in Billions USD)',
+                        font: {
+                        size: 16
+                        },
+                        color: '#333'
+                    }
+                }
+            }
+        }
+        });
+    }
+
+fetch("/updateShock", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ 
+            shock: shock,
+            country: country,
+            industry: industry
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === "success") {
+            const ctx = document.getElementById('resultChart').getContext('2d');
+            const labels = data.labels;
+            const original = data.original;
+            const shocked = data.shocked;
+
+            // If chart already exists, destroy it before creating new one
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            // Create chart with original values
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Sector Output',
+                        data: original,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeOutCubic'
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Top 5 Sectors Impacted'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Animate to shocked values after 2 seconds
+            setTimeout(() => {
+                chartInstance.data.datasets[0].data = shocked;
+                chartInstance.update();
+            }, 2000);
+        } else {
+            alert("Error: " + data.message);
+        }
+    })
+    .catch(error => {
+        console.error("Fetch error:", error);
+        alert("Fetch failes:" + error);
+    });
+});
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const testCtx = document.getElementById('testChart').getContext('2d');
+
+    testChartInstance = new Chart(testCtx, {
+        type: 'bar',
+        data: {
+            labels: ['USA', 'China', 'Brazil', 'France', 'Germany'],
+            datasets: [{
+                label: 'Country Output',
+                
+                data: [120, 90, 75, 60, 105],
+                backgroundColor: 'rgba(153, 102, 255, 0.6)',
+                borderColor: 'rgba(153, 102, 255, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Original Outputs'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+});
+
+  
+
+    </script>
+
+    
+</body>
+</html>
